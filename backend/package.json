@@ -1,0 +1,25 @@
+{
+  "name": "git-miller",
+  "version": "1.0.0",
+  "description": "Backend for a github repository explorer that uses miller columns!",
+  "main": "build/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run serve",
+    "serve": "node dist/server.js",
+    "watch": "ts-node-dev --respawn src/server.ts"
+  },
+  "repository": "https://github.com/scott0129/git-miller",
+  "author": "Scott Kim",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^1.18.3",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1"
+  },
+  "dependencies": {
+    "@types/express": "^4.16.0",
+    "express": "^4.16.3"
+  }
+}
