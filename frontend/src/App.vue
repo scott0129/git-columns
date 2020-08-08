@@ -1,21 +1,28 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <MillerColumns msg="Welcome to Your Vue.js App"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import MillerColumns from './components/MillerColumns.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    MillerColumns
   }
 }
 </script>
 
+<style lang="scss">
+  @import "@primer/css/index.scss";
+  body {
+    text-align: center;
+  }
+</style>
+
+<!--
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -26,3 +33,4 @@ export default {
   margin-top: 60px;
 }
 </style>
+-->
