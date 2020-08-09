@@ -1,37 +1,55 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
+  <div class='d-block'>
+    <div class='Box mx-auto d-flex flex-row' style='overflow: hidden; max-width: 80%'>
+      <div class='miller-col'>
+        <Row name='hello'></Row>
+        <Row name='hello2'></Row>
+      </div	>
+      <div class='miller-col'>
+        <Row name='goodbye'></Row>
+      </div	>
+      <div class='miller-col'>
+        <Row name='me too!'></Row>
+      </div	>
+    </div>
   </div>
 </template>
 
 <script>
+import Row from './Row.vue'
+
 export default {
   name: 'MillerColumns',
   props: {
-    msg: String
+  },
+  components: {
+    Row
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+<style lang="scss">
+  @import "@primer/css/index.scss";
+
+  .Box-col:first-of-type {
+    @extend .rounded-left-2;
+    border-left: none;
+  }
+
+  .Box-col:last-of-type {
+    @extend .rounded-right-2;
+  }
+
+  .Box-col {
+    padding: 16px;
+    margin-top: -1px;
+    list-style-type: none;
+    border-left: 1px #e1e4e8 solid;
+  }
+
+  .miller-col {
+    @extend .flex-1;
+    @extend .Box-col;
+    min-height: 80vh;
+  }
 </style>
