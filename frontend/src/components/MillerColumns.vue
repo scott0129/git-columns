@@ -17,6 +17,7 @@
 
 <script>
 import Row from './Row.vue'
+import Octokit from '@octokit/rest';
 
 export default {
   name: 'MillerColumns',
