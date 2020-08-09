@@ -1,5 +1,9 @@
 <template>
   <div class='d-block'>
+    <input v-model='ownerName' placeholder='owner'>
+    <input v-model='repoName' placeholder='repo'>
+    <button v-on:click='fetchRepo'>Get</button>
+
     <div class='Box mx-auto d-flex flex-row' style='overflow: hidden; max-width: 80%'>
       <div class='miller-col'>
         <Row name='hello'></Row>
@@ -17,11 +21,42 @@
 
 <script>
 import Row from './Row.vue'
-import Octokit from '@octokit/rest';
+const { Octokit } = require('@octokit/rest');
 
 export default {
   name: 'MillerColumns',
-  props: {
+  data: function() {
+    return {
+      octokit: new Octokit(),
+      ownerName: '',
+      repoName: '',
+      tree: [],
+      path: '',
+    }
+  },
+  methods: {
+    fetchRepo: function() {
+      this.fetchPath(this.ownerName, this.repoName, '').then( (fetchedTree) => { this.tree = fetchedTree; });
+      console.log(this.tree)
+    },
+    fetchPath: function(owner, repo, path) {
+      return this.octokit.repos.getContent({
+        owner: owner,
+        repo: repo,
+        path: path,
+      }).then((res) => {
+        let tree = [];
+        for (let node of res.data) {
+          if (node.type == 'file') {
+            tree.push(node);
+          } else {
+            this.fetchPath(owner, repo, node.path)
+              .then((subtree) => tree.push(subtree));
+          }
+        }
+        return tree;
+      });
+    }
   },
   components: {
     Row
