@@ -18,7 +18,8 @@
       <div v-if='getNodesAt(path).type == "dir"' id='last-col' class='miller-col'>
         <Row 
           v-for='node in getNodesAt(path)' 
-          v-bind:setPathCallback='pathForColAt(path.length)'
+          :setPathCallback='pathForColAt(path.length)'
+          :type='node.type'
           :name='node.name' 
           :key='node.name'>
         </Row>
@@ -82,7 +83,7 @@ export default {
       return setPath.bind(this);
     },
     fetchRepo: function() {
-      this.fetchPath(this.ownerName, this.repoName, '', 3)
+      this.fetchPath(this.ownerName, this.repoName, '', 5)
         .then( (fetchedTree) => { 
           this.wholeTree = fetchedTree;
           this.wholeTree.type = 'dir';

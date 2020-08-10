@@ -1,5 +1,18 @@
 <template>
-  <div class='menu-item' v-on:click='setPathCallback(name)' v-bind:class="{active: isActive}">
+  <div class='menu-item Box-row'
+       v-on:click='setPathCallback(name)'
+       v-bind:class='{active: isActive}'
+       style='display: flex'>
+    <div
+      class='mr-3 flex-shrink-0'
+      v-if='type == "file"'
+      v-html='octicons["file"].toSVG({class: "octicon octicon-file text-gray-light"})'>
+    </div>
+    <div 
+      class='mr-3 flex-shrink-0'
+      v-if='type == "dir"'
+      v-html='octicons["file-directory"].toSVG({class: "octicon octicon-file-directory color-blue-3"})'>
+    </div>
     <span class='css-truncate css-truncate-target d-block width-fit mr-1' >
       {{name}}
     </span>
@@ -7,11 +20,14 @@
 </template>
 
 <script>
+var octicons = require('@primer/octicons');
+
 export default {
   name: 'Row',
   data: function () {
     return {
-      count: 0
+      count: 0,
+      octicons: octicons,
     }
   },
   props: {

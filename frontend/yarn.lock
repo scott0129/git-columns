@@ -980,6 +980,13 @@
   dependencies:
     "@primer/octicons" "^9.1.1"
 
+"@primer/octicons@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@primer/octicons/-/octicons-10.0.0.tgz#81e94ed32545dfd3472c8625a5b345f3ea4c153d"
+  integrity sha512-iuQubq62zXZjPmaqrsfsCZUqIJgZhmA6W0tKzIKGRbkoLnff4TFFCL87hfIRATZ5qZPM4m8ioT8/bXI7WVa9WQ==
+  dependencies:
+    object-assign "^4.1.1"
+
 "@primer/octicons@^9.1.1":
   version "9.6.0"
   resolved "https://registry.yarnpkg.com/@primer/octicons/-/octicons-9.6.0.tgz#e195f2dd5f30b6918ad5d8ff224c12f778d02408"
@@ -4151,6 +4158,11 @@ hex-color-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/hex-color-regex/-/hex-color-regex-1.1.0.tgz#4c06fccb4602fe2602b3c93df82d7e7dbf1a8a8e"
   integrity sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==
 
+highlight.js@*:
+  version "10.1.2"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-10.1.2.tgz#c20db951ba1c22c055010648dfffd7b2a968e00c"
+  integrity sha512-Q39v/Mn5mfBlMff9r+zzA+gWxRsCRKwEMvYTiisLr/XUiFI/4puWt0Ojdko3R3JCNWGdOWaA5g/Yxqa23kC5AA==
+
 highlight.js@^9.6.0:
   version "9.18.1"
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.18.1.tgz#ed21aa001fe6252bb10a3d76d47573c6539fe13c"
@@ -5697,18 +5709,6 @@ obuf@^1.0.0, obuf@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
-
-octicons-modular@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/octicons-modular/-/octicons-modular-1.0.6.tgz#9f078877b93789f5b91f0260477c35599fee2520"
-  integrity sha512-jpdcKKtRhUIKUiVK+b+sp139TLnhAIEMCK3/b8Ap2fLLgfwkbB68QcodFpMnBw1pLHmWWKspKGBfT6KgMS/TNw==
-
-octicons-vue@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/octicons-vue/-/octicons-vue-1.0.6.tgz#f9c225ce2ce45367128b6d96274fac5ab402dab6"
-  integrity sha512-QENo/j1YTTku0c7dOw4+ljBfvVTpzHa1ydb+0wgbnzx7vMGtuwoB0LgpRwEkX+jzSxrBY+gFRsT9nI91mGBe8Q==
-  dependencies:
-    octicons-modular "^1.0.6"
 
 on-finished@~2.3.0:
   version "2.3.0"
@@ -8128,6 +8128,13 @@ vue-eslint-parser@^7.0.0:
     espree "^6.2.1"
     esquery "^1.0.1"
     lodash "^4.17.15"
+
+vue-highlightjs@^1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/vue-highlightjs/-/vue-highlightjs-1.3.3.tgz#29a0d57132fc1ce15cfa61e896918f5b718c5d52"
+  integrity sha1-KaDVcTL8HOFc+mHolpGPW3GMXVI=
+  dependencies:
+    highlight.js "*"
 
 vue-hot-reload-api@^2.3.0:
   version "2.3.4"
