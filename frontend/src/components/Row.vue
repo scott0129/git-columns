@@ -1,8 +1,8 @@
 <template>
-  <div class='row'>
-    <p>
+  <div class='Box-row'>
+    <span class='css-truncate d-block width-fit'>
       {{name}}
-    </p>
+    </span>
   </div>
 </template>
 

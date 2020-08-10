@@ -6,8 +6,7 @@
 
     <div class='Box mx-auto d-flex flex-row' style='overflow: hidden; max-width: 80%'>
       <div class='miller-col'>
-        <Row name='hello'></Row>
-        <Row name='hello2'></Row>
+        <Row v-for='node in tree' :name='node.name' :key='node.name'/>
       </div	>
       <div class='miller-col'>
         <Row name='goodbye'></Row>
@@ -27,17 +26,18 @@ export default {
   name: 'MillerColumns',
   data: function() {
     return {
-      octokit: new Octokit(),
-      ownerName: '',
-      repoName: '',
+      octokit: new Octokit({
+        auth: process.env.VUE_APP_ACCESS_TOKEN,
+      }),
+      ownerName: 'scott0129',
+      repoName: 'gosu',
       tree: [],
       path: '',
     }
   },
   methods: {
     fetchRepo: function() {
-      this.fetchPath(this.ownerName, this.repoName, '').then( (fetchedTree) => { this.tree = fetchedTree; });
-      console.log(this.tree)
+      this.fetchPath(this.ownerName, this.repoName, '').then( (fetchedTree) => { this.tree = fetchedTree; console.log(this.tree)});
     },
     fetchPath: function(owner, repo, path) {
       return this.octokit.repos.getContent({
@@ -51,7 +51,10 @@ export default {
             tree.push(node);
           } else {
             this.fetchPath(owner, repo, node.path)
-              .then((subtree) => tree.push(subtree));
+              .then((subtree) => {
+                subtree.name = node.name;
+                tree.push(subtree);
+              });
           }
         }
         return tree;
