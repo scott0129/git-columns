@@ -1,7 +1,9 @@
 import Vue from 'vue'
+import VueHighlightJS from 'vue-highlightjs'
 import App from './App.vue'
 
-Vue.config.productionTip = false
+Vue.use(VueHighlightJS);
+Vue.config.productionTip = false;
 
 new Vue({
   render: h => h(App),

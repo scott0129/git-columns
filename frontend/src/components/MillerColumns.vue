@@ -4,21 +4,21 @@
     <input v-model='repoName' placeholder='repo'>
     <button v-on:click='fetchRepo'>Get</button>
 
-    <div id='container' class='Box mx-auto d-flex flex-row' style='overflow: scroll; max-width: 80%'>
-      <div class='miller-col' v-for='(column, idx) in columns' :key='column.name'>
+    <div id='container' class='Box mx-auto d-flex flex-row' style='overflow: scroll; max-width: 100%'>
+      <div class='miller-col' v-for='(column, idx) in columns' :key='column.name' style='max-height: 80vh; overflow: scroll'>
         <Row 
           v-for='node in column' 
           :isActive='path[idx] == node.name' 
-          :setPathCallback='pathForColAt(idx)'
+          :setPathCallback='cbForColumnAt(idx)'
           :type='node.type'
           :name='node.name' 
           :key='node.name'>
         </Row>
       </div>
-      <div v-if='getNodesAt(path).type == "dir"' id='last-col' class='miller-col'>
+      <div v-if='getNodesAt(path).type == "dir"' id='last-col' class='miller-col' style='max-height: 80vh; overflow: scroll'>
         <Row 
           v-for='node in getNodesAt(path)' 
-          :setPathCallback='pathForColAt(path.length)'
+          :setPathCallback='cbForColumnAt(path.length)'
           :type='node.type'
           :name='node.name' 
           :key='node.name'>
@@ -64,7 +64,7 @@ export default {
      * That way, a unique function is given to every row so that this component can know
      * which was clicked.
      */
-    pathForColAt: function(colIdx) {
+    cbForColumnAt: function(colIdx) {
       function setPath(name) {
         this.path[colIdx] = name;
         this.path.splice(colIdx + 1);
@@ -78,11 +78,25 @@ export default {
         }
         this.columns = this.columns.splice(0, this.path.length);
 
-        this.lastCol = this.getNodesAt(this.path);
+        /**
+         * TODO: I named the funciton 'getNodesAt' plural because it returns a list
+         * but I think that really, it should be called 'getNode' cause it could also be a file
+         */
+        let selectedNode = this.getNodesAt(this.path);
+
+        if (selectedNode.type == 'dir') {
+          this.lastCol = this.getNodesAt(this.path);
+        } else {
+          fetch(selectedNode.download_url)
+            .then(response => response.text())
+            .then(data => this.$emit('codeUpdate', data));
+        }
       }
       return setPath.bind(this);
     },
+
     fetchRepo: function() {
+      this.path = [];
       this.fetchPath(this.ownerName, this.repoName, '', 5)
         .then( (fetchedTree) => { 
           this.wholeTree = fetchedTree;
