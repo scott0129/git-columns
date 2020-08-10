@@ -1,6 +1,6 @@
 <template>
-  <div class='Box-row'>
-    <span class='css-truncate d-block width-fit'>
+  <div class='menu-item' v-on:click='setPathCallback(name)' v-bind:class="{active: isActive}">
+    <span class='css-truncate css-truncate-target d-block width-fit mr-1' >
       {{name}}
     </span>
   </div>
@@ -16,10 +16,17 @@ export default {
   },
   props: {
     name: String,
-    selected: Boolean
+    path: String,
+    type: String,
+    isActive: Boolean,
+    data: Object,
+    setPathCallback: Function,
   }
 }
 </script>
 
 <style lang="scss">
+.active, .active:focus {
+  background-color: #abcedf !important;
+}
 </style>

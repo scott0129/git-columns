@@ -904,7 +904,7 @@
     is-plain-object "^4.0.0"
     universal-user-agent "^6.0.0"
 
-"@octokit/graphql@^4.3.1":
+"@octokit/graphql@^4.3.1", "@octokit/graphql@^4.5.3":
   version "4.5.3"
   resolved "https://registry.yarnpkg.com/@octokit/graphql/-/graphql-4.5.3.tgz#d5ff0d4a8a33e98614a2a7359dac98bc285e062f"
   integrity sha512-JyYvi3j2tOb5ofASEpcg1Advs07H+Ag+I+ez7buuZfNVAmh1IYcDTuxd4gnYH8S2PSGu+f5IdDGxMmkK+5zsdA==
@@ -5697,6 +5697,18 @@ obuf@^1.0.0, obuf@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
+
+octicons-modular@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/octicons-modular/-/octicons-modular-1.0.6.tgz#9f078877b93789f5b91f0260477c35599fee2520"
+  integrity sha512-jpdcKKtRhUIKUiVK+b+sp139TLnhAIEMCK3/b8Ap2fLLgfwkbB68QcodFpMnBw1pLHmWWKspKGBfT6KgMS/TNw==
+
+octicons-vue@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/octicons-vue/-/octicons-vue-1.0.6.tgz#f9c225ce2ce45367128b6d96274fac5ab402dab6"
+  integrity sha512-QENo/j1YTTku0c7dOw4+ljBfvVTpzHa1ydb+0wgbnzx7vMGtuwoB0LgpRwEkX+jzSxrBY+gFRsT9nI91mGBe8Q==
+  dependencies:
+    octicons-modular "^1.0.6"
 
 on-finished@~2.3.0:
   version "2.3.0"
