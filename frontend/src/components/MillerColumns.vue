@@ -97,6 +97,8 @@ export default {
 
     fetchRepo: function() {
       this.path = [];
+      this.columns = [];
+      this.lastCol = [];
       this.fetchPath(this.ownerName, this.repoName, '', 5)
         .then( (fetchedTree) => { 
           this.wholeTree = fetchedTree;
