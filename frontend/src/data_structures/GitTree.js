@@ -1,4 +1,0 @@
-class GitTree {
-  constructor(url) {
-  }
-}
