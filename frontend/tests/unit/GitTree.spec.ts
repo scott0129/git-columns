@@ -1,4 +1,4 @@
-import GitTree from '@/data_structures/GitTree.ts'
+import GitTree from '../../src/data_structures/GitTree'
 
 describe('Initialization', () => {
   const OLD_ENV = process.env;
