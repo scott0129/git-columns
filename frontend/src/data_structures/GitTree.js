@@ -1,0 +1,4 @@
+class GitTree {
+  constructor(url) {
+  }
+}
