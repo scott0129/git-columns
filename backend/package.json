@@ -1,5 +1,5 @@
 {
-  "name": "git-miller",
+  "name": "backend",
   "version": "1.0.0",
   "description": "Backend for a github repository explorer that uses miller columns!",
   "main": "build/server.js",

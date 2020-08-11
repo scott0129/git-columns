@@ -40,7 +40,7 @@ export default {
         auth: process.env.VUE_APP_ACCESS_TOKEN,
       }),
       ownerName: 'scott0129',
-      repoName: 'gosu',
+      repoName: 'git-miller',
       columns: [],
       wholeTree: [],
       lastCol: [],

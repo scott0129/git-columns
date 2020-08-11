@@ -1,0 +1,16 @@
+{
+  "name": "git-miller",
+  "version": "0.0.1",
+  "description": "A fast and friendly github repo explorer.",
+  "main": "backend/src/server.js",
+  "repository": "https://github.com/scott0129/git-miller.git",
+  "author": "Scott Kim <scott102938@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": ["frontend", "backend"],
+  "scripts": {
+    "serve": "vue-cli-service serve ./frontend/src/main.js",
+    "build": "vue-cli-service build ./frontend/src/main.js",
+    "lint": "vue-cli-service lint ./frontend/src/main.js"
+  }
+}
