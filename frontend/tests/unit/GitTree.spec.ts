@@ -60,6 +60,6 @@ describe('Path exploring', () => {
     let sortedCopy = rootFiles.slice();
 
     sortedCopy.sort((a, b) => a.name.localeCompare(b.name));
-    expect(rootDir.files).toBe(rootFilesCopy);
+    expect(rootFiles).toBe(sortedCopy);
   })
 })

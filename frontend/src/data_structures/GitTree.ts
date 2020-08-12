@@ -2,7 +2,8 @@ const { Octokit } = require('@octokit/rest');
 
 class GitTree {
   octokit: Object;
-  authMode: String;
+  authMode: string;
+  depth: number;
 
   constructor(owner, repo) {
 
@@ -18,6 +19,28 @@ class GitTree {
       this.authMode = 'access_key';
     }
   }
+
+  /**
+   * Like an inode, but for Github trees
+   */
+  static Gnode = class {
+    name: string;
+    type: string;
+    files: Array<this>;
+    constructor() {}
+    right() {
+      return new GitTree.Gnode();
+    }
+    down() {
+      return new GitTree.Gnode();
+    }
+  }
+
+  get(path) {
+    return new GitTree.Gnode();
+  }
+
 }
+
 
 export default GitTree;
