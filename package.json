@@ -9,8 +9,11 @@
   "private": true,
   "workspaces": ["frontend", "backend"],
   "scripts": {
-    "serve": "vue-cli-service serve ./frontend/src/main.js",
+    "start": "npm run serve",
+    "serve": "node backend/src/server/js",
+    "serve-front": "vue-cli-service serve ./frontend/src/main.js",
     "build": "vue-cli-service build ./frontend/src/main.js --dest ./frontend/dist",
-    "lint": "vue-cli-service lint ./frontend/src/main.js"
+    "lint": "vue-cli-service lint ./frontend/src/main.js",
+    "test": "vue-cli-service test:unit"
   }
 }
