@@ -1,21 +1,11 @@
-const GitTree = require('../../src/data_structures/GitTree')
+import GitTree from '../../src/data_structures/GitTree';
+const secrets = require('./.env');
 
 describe('Initialization', () => {
-  const OLD_ENV = process.env;
-
-  beforeEach(() => {
-    jest.resetModules() // most important - it clears the cache
-    process.env = { ...OLD_ENV }; // make a copy
-  });
-
-  afterAll(() => {
-    process.env = OLD_ENV; // restore old env
-  });
-
   it('uses personal access key in developement', () => {
-    const authId = process.env.MY_AUTH_ID;
-    console.log(authId);
-    let tree = new GitTree('scott0129', 'git-miller', authId);
+    console.log(GitTree);
+    const token = secrets.PERSONAL_ACCESS_TOKEN;
+    let tree = new GitTree('scott0129', 'git-miller', token);
   })
 })
 
@@ -51,7 +41,7 @@ describe('Path exploring', () => {
     let rootFiles = tree.get([]).files;
     let sortedCopy = rootFiles.slice();
 
-    sortedCopy.sort((a, b) => a.name.localeCompare(b.name));
+    sortedCopy.sort((a: any, b: any) => a.name.localeCompare(b.name));
     expect(rootFiles).toBe(sortedCopy);
   })
 })

@@ -1,29 +1,16 @@
-const Pizzly = require('pizzly-js');
+const { Octokit } = require('@octokit/rest');
 
 class GitTree {
+  octokit: typeof Octokit;
   depth: number;
   github: any;
   root: Gnode;
-  authId?: string;
+  token: string | undefined;
 
-  constructor(owner: string, repo: string, authId?: string) {
-    if (authId) {
-      this.authId = authId;
-      this.github = new Pizzly({
-        host: 'https://git-columns-auth.herokuapp.com',
-        publishableKey: 'ohNoYouSup3rH4x0rHowDidYouDoIt'
-      }).integration('github');
-    }
-
-    this.github
-      .auth(authId)
-      .get(`/repos/${owner}/${repo}/branches/master`)
-      .then((response:any) => console.log(response))
-      .catch(console.error)
-
-    this.github
-      .auth(authId)
-      .get(`/repos/${owner}/${repo}`)
+  constructor(owner: string, repo: string, token?: string) {
+    this.octokit = new Octokit({
+      auth: process.env.VUE_APP_ACCESS_TOKEN,
+    }),
 
     this.depth = 0;
     this.root = new Gnode();
@@ -56,61 +43,3 @@ class Gnode {
 }
 
 export default GitTree;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

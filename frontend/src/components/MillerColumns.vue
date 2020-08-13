@@ -43,6 +43,7 @@
 <script>
 import Row from './Row.vue';
 import Pizzly from 'pizzly-js';
+import GitTree from '../data_structures/GitTree.ts'
 const { Octokit } = require('@octokit/rest');
 
 export default {
@@ -52,6 +53,7 @@ export default {
       octokit: new Octokit({
         auth: process.env.VUE_APP_ACCESS_TOKEN,
       }),
+      user: '',
       ownerName: 'scott0129',
       repoName: 'git-miller',
       columns: [],
@@ -59,6 +61,7 @@ export default {
       lastCol: [],
       path: [],
       repositories: [],
+      gitTree: {},
     }
   },
   methods: {
@@ -156,6 +159,8 @@ export default {
     connectSuccess: function(data) {
       // On success, we update the user object
       this.user = data.authId;
+      this.token = data.token
+      this.gitTree = new GitTree(this.ownerName, this.repoName, this.token);
       console.log('Successfully logged in!')
     },
     connectError: function (err) {
