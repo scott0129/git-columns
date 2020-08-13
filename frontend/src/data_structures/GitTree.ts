@@ -1,46 +1,174 @@
-const { Octokit } = require('@octokit/rest');
+const Pizzly = require('pizzly-js');
 
 class GitTree {
-  octokit: Object;
-  authMode: string;
   depth: number;
+  github: any;
+  root: Gnode;
+  authId?: string;
 
-  constructor(owner, repo) {
-
-    if (process.env.NODE_ENV == 'production') {
-      this.octokit = new Octokit({
-        auth: process.env.VUE_APP_ACCESS_TOKEN,
-      });
-      this.authMode = 'app_key';
-    } else {
-      this.octokit = new Octokit({
-        auth: process.env.VUE_APP_ACCESS_TOKEN,
-      }),
-      this.authMode = 'access_key';
+  constructor(owner: string, repo: string, authId?: string) {
+    if (authId) {
+      this.authId = authId;
+      this.github = new Pizzly({
+        host: 'https://git-columns-auth.herokuapp.com',
+        publishableKey: 'ohNoYouSup3rH4x0rHowDidYouDoIt'
+      }).integration('github');
     }
+
+    this.github
+      .auth(authId)
+      .get(`/repos/${owner}/${repo}/branches/master`)
+      .then((response:any) => console.log(response))
+      .catch(console.error)
+
+    this.github
+      .auth(authId)
+      .get(`/repos/${owner}/${repo}`)
+
+    this.depth = 0;
+    this.root = new Gnode();
   }
 
-  /**
-   * Like an inode, but for Github trees
-   */
-  static Gnode = class {
-    name: string;
-    type: string;
-    files: Array<this>;
-    constructor() {}
-    right() {
-      return new GitTree.Gnode();
-    }
-    down() {
-      return new GitTree.Gnode();
-    }
-  }
 
-  get(path) {
-    return new GitTree.Gnode();
+  get(path: Array<string>) {
+    return new Gnode();
   }
+}
 
+/**
+ * Like an inode, but for Github trees
+ */
+class Gnode {
+  name: string;
+  type: string;
+  files: Array<this>;
+  constructor() {
+    this.name = '';
+    this.type = '';
+    this.files = [];
+  }
+  right() {
+    return new Gnode();
+  }
+  down() {
+    return new Gnode();
+  }
 }
 
 
 export default GitTree;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

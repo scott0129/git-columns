@@ -1,4 +1,4 @@
-import GitTree from '../../src/data_structures/GitTree'
+const GitTree = require('../../src/data_structures/GitTree')
 
 describe('Initialization', () => {
   const OLD_ENV = process.env;
@@ -13,17 +13,9 @@ describe('Initialization', () => {
   });
 
   it('uses personal access key in developement', () => {
-    console.log(process.env.VUE_APP_ACCESS_TOKEN);
-    process.env.NODE_ENV = 'development';
-    let tree = new GitTree('scott0129', 'git-miller');
-    expect(tree.authMode).toBe('access_key');
-  })
-
-  it('uses app private key in production', () => {
-    console.log(process.env.VUE_APP_ACCESS_TOKEN);
-    process.env.NODE_ENV = 'production';
-    let tree = new GitTree('scott0129', 'git-miller');
-    expect(tree.authMode).toBe('app_key');
+    const authId = process.env.MY_AUTH_ID;
+    console.log(authId);
+    let tree = new GitTree('scott0129', 'git-miller', authId);
   })
 })
 
@@ -63,3 +55,60 @@ describe('Path exploring', () => {
     expect(rootFiles).toBe(sortedCopy);
   })
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
