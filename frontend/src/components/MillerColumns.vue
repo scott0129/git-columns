@@ -122,6 +122,7 @@ export default {
           this.wholeTree.type = 'dir';
         });
     },
+    
     fetchPath: function(owner, repo, path, depth) {
       if (!depth || depth <= 0) {
         return Promise.resolve([]);
