@@ -1,5 +1,17 @@
 <template>
   <div class='d-block'>
+      <div v-if='user'>
+        <h1>Latest repositories starred</h1>
+        <ul>
+          <li v-for='repository in repositories' :key='repository.html_url'>
+            <a :href='repository.html_url' target='_blank'>{{repository.name}}</a>
+          </li>
+        </ul>
+        <p v-if="repositories.length === 0">Whoa, such empty!</p>
+      </div>
+      <div v-else>
+        <button @click.prevent="connect">Connect to GitHub</button>
+      </div>
     <input v-model='ownerName' placeholder='owner'>
     <input v-model='repoName' placeholder='repo'>
     <button v-on:click='fetchRepo'>Get</button>
@@ -29,7 +41,8 @@
 </template>
 
 <script>
-import Row from './Row.vue'
+import Row from './Row.vue';
+import Pizzly from 'pizzly-js';
 const { Octokit } = require('@octokit/rest');
 
 export default {
@@ -45,6 +58,7 @@ export default {
       wholeTree: [],
       lastCol: [],
       path: [],
+      repositories: [],
     }
   },
   methods: {
@@ -129,6 +143,24 @@ export default {
         }
         return tree;
       });
+    },
+    connect: function() {
+      // Here, we create a new method
+      // that "connect" a user to GitHub
+      this.$pizzly
+        .integration('github')
+        .connect()
+        .then(this.connectSuccess)
+        .catch(this.connectError);
+    },
+    connectSuccess: function(data) {
+      // On success, we update the user object
+      this.user = data.authId;
+      console.log('Successfully logged in!')
+    },
+    connectError: function (err) {
+      console.error(err)
+      alert('Something went wrong. Look at the logs.')
     }
   }, 
   updated: function () {
@@ -138,6 +170,12 @@ export default {
         millerWindow.scrollIntoView({ behavior: 'smooth' });
       }
     })
+  },
+  mounted: function() {
+    this.$pizzly = new Pizzly({
+      host: 'https://git-columns-auth.herokuapp.com',
+      publishableKey: 'ohNoYouSup3rH4x0rHowDidYouDoIt'
+    });
   },
   components: {
     Row

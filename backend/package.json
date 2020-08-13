@@ -5,14 +5,16 @@
   "main": "build/server.js",
   "scripts": {
     "start": "npm run serve",
-    "serve": "node src/server.js"
+    "serve": "node src/server.js",
+    "develop": "NODE_ENV=dev node src/server.js"
   },
   "repository": "https://github.com/scott0129/git-miller",
   "author": "Scott Kim",
   "license": "MIT",
   "dependencies": {
     "express": "^4.16.3",
+    "express-session": "^1.17.1",
     "passport": "^0.4.1",
-    "passport-oauth2": "^1.5.0"
+    "passport-github2": "^0.1.12"
   }
 }
