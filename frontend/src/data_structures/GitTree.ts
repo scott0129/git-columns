@@ -67,14 +67,16 @@ class GitTree {
     return this.root.depth();
   }
 
-  get(path: Array<string>): Gnode {
+  async get(path: Array<string>) {
     let currentNode: Gnode | undefined;
     currentNode = this.root;
     for (let name of path) {
       currentNode = currentNode.files!.find((node) => node.name == name)
-
       if (currentNode == undefined || currentNode.files == undefined) {
-        throw 'Path does not exist. Or it\'s a bug I made. Probably the latter.'
+        throw `Path "${path.join('/')}" does not exist. Or it's a bug I made. Probably the latter.`
+      }
+      if (!currentNode.isLoaded) {
+        await currentNode.touch();
       }
     }
     return currentNode;

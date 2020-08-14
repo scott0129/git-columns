@@ -104,7 +104,7 @@ class Gnode {
    * file structure are loaded
    */
   async touch() {
-    await this.load(0)
+    await this.load(3)
       .catch((err) => {
         if (err.status == 403 && err.headers['x-ratelimit-remaining'] == '0') {
           //TODO Catch emit ratelimiting error and display something on Vue
@@ -149,17 +149,25 @@ class Gnode {
     }
 
     // Sort the files into alphabetical order, but always put directories first
-    this.files!.sort((a: Gnode, b: Gnode) => {
-      if (a.type == b.type) {
-        return a.name.localeCompare(b.name)
+    this.files!.sort(this.fileCompare);
+
+    this.isLoaded = true;
+  }
+
+  private fileCompare(a: Gnode, b	: Gnode) {
+    if (a.type == b.type) {
+        if (a.name < b.name) {
+          return -1
+        } else if (a.name > b.name) {
+          return 1;
+        } else {
+          return 0
+        }
       } else if (a.type == 'dir') {
         return -1;
       } else {
         return 1;
       }
-    });
-
-    this.isLoaded = true;
   }
 }
 

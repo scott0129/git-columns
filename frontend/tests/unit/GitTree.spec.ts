@@ -13,9 +13,8 @@ describe('Path exploring', () => {
   it('constructs tree with iterators', async () => {
     let tree = new GitTree('scott0129', 'git-miller', token);
     await tree.init();
-    console.log("finished init!");
 
-    let rootNode = tree.get([]);
+    let rootNode = await tree.get([]);
     expect(rootNode.type).toBe('dir');
 
     let firstNode = rootNode.right();
@@ -29,13 +28,14 @@ describe('Path exploring', () => {
     expect(tree.depth()).toBeLessThan(6);
 
     let oldDepth = tree.depth();
-    let rootNode = tree.get([]);
-    rootNode.right();
+    let rootNode = await tree.get([]);
+    let nextNode = rootNode.right();
+    await nextNode.touch();
     expect(tree.depth()).toBeGreaterThan(oldDepth);
     
     oldDepth = tree.depth();
     let path = ['frontend', 'src'];
-    tree.get(path);
+    await tree.get(path);
     expect(tree.depth()).toBeGreaterThan(oldDepth);
 
   })
@@ -43,11 +43,17 @@ describe('Path exploring', () => {
   it('has files in alphabetical order', async () => {
     let tree = new GitTree('scott0129', 'git-miller', token);
     await tree.init();
-    let rootFiles = tree.get([]).files;
+    let rootNode = await tree.get([]);
+    let filenames = [];
+    for (const file of rootNode.files!) {
+      if (file.type == 'file') {
+        filenames.push(file.name);
+      }
+    }
 
-    let sortedCopy = rootFiles!.slice();
+    let sortedCopy = filenames!.slice();
+    sortedCopy.sort();
 
-    sortedCopy.sort((a: any, b: any) => a.name.localeCompare(b.name));
-    expect(rootFiles).toBe(sortedCopy);
+    expect(filenames).toEqual(sortedCopy);
   })
 })
