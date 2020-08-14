@@ -6,8 +6,9 @@ import Pizzly from 'pizzly-js';
  */
 class Gnode {
   
-  pizzly: Pizzly;
   authInfo: {
+    pizzly: Pizzly;
+    octokit: Octokit,
     token: string,
     owner: string,
     repo: string,
@@ -30,10 +31,6 @@ class Gnode {
   isRoot: boolean;
 
   constructor(authInfo: any, parent: Gnode | null, data: any, isRoot?: boolean) {
-    this.pizzly = new Pizzly({
-      host: 'https://git-columns-auth.herokuapp.com',
-      publishableKey: 'ohNoYouSup3rH4x0rHowDidYouDoIt'
-    });
 
     this.authInfo = authInfo;
     this.parent = parent;
@@ -137,6 +134,22 @@ class Gnode {
       })
   }
 
+  private async fetchContents(owner: string, repo: string, path: string, token?: string) {
+    if (token) {
+      return this.authInfo.pizzly
+        .integration('github')
+        .auth(this.authInfo.token)
+        .get(`/repos/${owner}/${repo}/contents/${this.path}`)
+        .then((res: Response) => res.json());
+    } else {
+      return this.authInfo.octokit.repos.getContent({
+        owner: owner,
+        repo: repo,
+        path: path,
+      }).then((res) => res.data)
+    }
+  }
+
   /**
    * A recursive function to load all the data to some depth
    */
@@ -155,11 +168,11 @@ class Gnode {
 
     this.files = [];
 
-    const data = await this.pizzly
-      .integration('github')
-      .auth(this.authInfo.token)
-      .get(`/repos/${this.authInfo.owner}/${this.authInfo.repo}/contents/${this.path}`)
-      .then((res: Response) => res.json());
+    const data = await this.fetchContents(
+        this.authInfo.owner,
+        this.authInfo.repo,
+        this.path,
+        this.authInfo.token)
 
     // Create new Gnodes, while loading new ones.
     for (const nodeData of data) {

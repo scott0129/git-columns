@@ -1,13 +1,12 @@
 import Gnode from './Gnode';
 import { Octokit } from '@octokit/rest';
-Octokit.defaults({
-  baseUrl: "https://github-enterprise.acme-inc.com/api/v3",
-
-})
+import Pizzly from 'pizzly-js';
 
 class GitTree {
 
-  // octokit: Octokit;
+  octokit: Octokit;
+  pizzly: Pizzly;
+
   root: Gnode; 
   github: any;
   owner: string;
@@ -19,15 +18,16 @@ class GitTree {
     this.repo = repo;
     this.token = token;
 
-    // if (token) {
-    //   this.octokit = new Octokit({
-    //     auth: token,
-    //   });
-    // } else {
-    //   this.octokit = new Octokit();
-    // }
+    this.octokit = new Octokit();
+    this.pizzly = new Pizzly({
+      host: 'https://git-columns-auth.herokuapp.com',
+      publishableKey: 'ohNoYouSup3rH4x0rHowDidYouDoIt'
+    });
 
-    const authInfo = {token: token, 
+    const authInfo = {
+                    octokit: this.octokit,
+                    pizzly: this.pizzly,
+                    token: token, 
                     owner: owner, 
                     repo: repo};
     
