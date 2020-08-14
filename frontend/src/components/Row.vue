@@ -1,6 +1,6 @@
 <template>
   <div class='menu-item Box-row'
-       v-on:click='setPathCallback(name)'
+       v-on:click='$emit("row-click", name, colIdx)'
        v-bind:class='{active: isActive}'
        style='display: flex'>
     <div
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-var octicons = require('@primer/octicons');
+import octicons from '@primer/octicons';
 
 export default {
   name: 'Row',
@@ -34,6 +34,7 @@ export default {
     name: String,
     path: String,
     type: String,
+    colIdx: Number,
     isActive: Boolean,
     data: Object,
     setPathCallback: Function,

@@ -1,9 +1,13 @@
 import Gnode from './Gnode';
-const { Octokit } = require('@octokit/rest');
+import { Octokit } from '@octokit/rest';
+Octokit.defaults({
+  baseUrl: "https://github-enterprise.acme-inc.com/api/v3",
+
+})
 
 class GitTree {
 
-  octokit: typeof Octokit;
+  // octokit: Octokit;
   root: Gnode; 
   github: any;
   owner: string;
@@ -15,15 +19,15 @@ class GitTree {
     this.repo = repo;
     this.token = token;
 
-    if (token) {
-      this.octokit = new Octokit({
-        auth: token,
-      });
-    } else {
-      this.octokit = new Octokit();
-    }
+    // if (token) {
+    //   this.octokit = new Octokit({
+    //     auth: token,
+    //   });
+    // } else {
+    //   this.octokit = new Octokit();
+    // }
 
-    let authInfo = {octokit: this.octokit, 
+    const authInfo = {token: token, 
                     owner: owner, 
                     repo: repo};
     
@@ -67,10 +71,22 @@ class GitTree {
     return this.root.depth();
   }
 
+  lazyGet(path: Array<string>) {
+    let currentNode: Gnode | undefined;
+    currentNode = this.root;
+    for (const name of path) {
+      currentNode = currentNode.files!.find((node) => node.name == name)
+      if (!currentNode || !currentNode.files || !currentNode.isLoaded) {
+        return Gnode.empty();
+      }
+    }
+    return currentNode;
+  }
+
   async get(path: Array<string>) {
     let currentNode: Gnode | undefined;
     currentNode = this.root;
-    for (let name of path) {
+    for (const name of path) {
       currentNode = currentNode.files!.find((node) => node.name == name)
       if (currentNode == undefined || currentNode.files == undefined) {
         throw `Path "${path.join('/')}" does not exist. Or it's a bug I made. Probably the latter.`

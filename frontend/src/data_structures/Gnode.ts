@@ -1,14 +1,16 @@
-const { Octokit } = require('@octokit/rest');
+import { Octokit } from '@octokit/rest';
+import Pizzly from 'pizzly-js';
 
 /**
  * Like an inode, but for Github trees
  */
 class Gnode {
   
+  pizzly: Pizzly;
   authInfo: {
-    octokit: typeof Octokit,
-    owner: string;
-    repo: string;
+    token: string,
+    owner: string,
+    repo: string,
   }
 
   parent: Gnode | null;
@@ -28,6 +30,11 @@ class Gnode {
   isRoot: boolean;
 
   constructor(authInfo: any, parent: Gnode | null, data: any, isRoot?: boolean) {
+    this.pizzly = new Pizzly({
+      host: 'https://git-columns-auth.herokuapp.com',
+      publishableKey: 'ohNoYouSup3rH4x0rHowDidYouDoIt'
+    });
+
     this.authInfo = authInfo;
     this.parent = parent;
 
@@ -42,6 +49,21 @@ class Gnode {
     this.files = undefined; // Files are undefined until load() is called
 
     this.isRoot = isRoot || false;
+
+  }
+
+  static empty() {
+    return new Gnode(
+      {},
+      null,
+      {
+        name: 'PLACEHOLDER',
+        path: 'PLACEHOLDER',
+        type: 'dir',
+        size: 0,
+        download_url: 'PLACEHOLDER',
+      }
+    )
   }
 
   /**
@@ -52,22 +74,22 @@ class Gnode {
    * i.e. If we've reached the end of a list
    */
   up() {
-    let siblings = this.parent!.files!;
-    let thisIdx = siblings.indexOf(this)
+    const siblings = this.parent!.files!;
+    const thisIdx = siblings.indexOf(this)
     if (siblings[thisIdx - 1]) { siblings[thisIdx - 1] }
     else { return this }
   }
 
   down() {
-    let siblings = this.parent!.files!;
-    let thisIdx = siblings.indexOf(this)
+    const siblings = this.parent!.files!;
+    const thisIdx = siblings.indexOf(this)
     if (siblings[thisIdx + 1]) { siblings[thisIdx + 1] }
     else { return this }
   }
 
   left() {
     if (this.parent && !this.parent.isRoot) { return this.parent }
-    else { return this };
+    else { return this }
   }
 
   right() {
@@ -87,9 +109,9 @@ class Gnode {
     if (!this.isLoaded || this.type != 'dir') { return 0; }
 
     let deepestChild = -1;
-    for (let node of this.files!) {
+    for (const node of this.files!) {
       if (node.type == 'dir') {
-        let child = node.depth();
+        const child = node.depth();
         if (child > deepestChild) {
           deepestChild = child;
         }
@@ -123,7 +145,7 @@ class Gnode {
       return;
     }
     if (this.isLoaded) {
-      for (let node of this.files!) {
+      for (const node of this.files!) {
         if (node.type == 'dir') {
           await node.load(depth - 1);
         }
@@ -133,15 +155,15 @@ class Gnode {
 
     this.files = [];
 
-    let res = await this.authInfo.octokit.repos.getContent({
-      owner: this.authInfo.owner,
-      repo: this.authInfo.repo,
-      path: this.path,
-    })
-    
+    const data = await this.pizzly
+      .integration('github')
+      .auth(this.authInfo.token)
+      .get(`/repos/${this.authInfo.owner}/${this.authInfo.repo}/contents/${this.path}`)
+      .then((res: Response) => res.json());
+
     // Create new Gnodes, while loading new ones.
-    for (let nodeData of res.data) {
-      let newNode = new Gnode(this.authInfo, this, nodeData)
+    for (const nodeData of data) {
+      const newNode = new Gnode(this.authInfo, this, nodeData)
       if (newNode.type == 'dir') {
         await newNode.load(depth - 1)
       }

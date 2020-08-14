@@ -1,16 +1,7 @@
 <template>
   <div class='d-block'>
-      <div v-if='user'>
-        <h1>Latest repositories starred</h1>
-        <ul>
-          <li v-for='repository in repositories' :key='repository.html_url'>
-            <a :href='repository.html_url' target='_blank'>{{repository.name}}</a>
-          </li>
-        </ul>
-        <p v-if="repositories.length === 0">Whoa, such empty!</p>
-      </div>
-      <div v-else>
-        <button @click.prevent="connect">Connect to GitHub</button>
+      <div v-if='!user'>
+        <button @click.prevent='connect'>Connect to GitHub</button>
       </div>
     <input v-model='ownerName' placeholder='owner'>
     <input v-model='repoName' placeholder='repo'>
@@ -20,17 +11,19 @@
       <div class='miller-col' v-for='(column, idx) in columns' :key='column.name' style='max-height: 80vh; overflow: scroll'>
         <Row 
           v-for='node in column' 
+          v-on:row-click='rowClicked'
           :isActive='path[idx] == node.name' 
-          :setPathCallback='cbForColumnAt(idx)'
+          :colIdx='idx'
           :type='node.type'
           :name='node.name' 
           :key='node.name'>
         </Row>
       </div>
-      <div v-if='getNodesAt(path).type == "dir"' id='last-col' class='miller-col' style='max-height: 80vh; overflow: scroll'>
+      <div v-if='this.gitTree.lazyGet(path).type == "dir"' id='last-col' class='miller-col' style='max-height: 80vh; overflow: scroll'>
         <Row 
-          v-for='node in getNodesAt(path)' 
-          :setPathCallback='cbForColumnAt(path.length)'
+          v-for='node in this.gitTree.lazyGet(path).files' 
+          v-on:row-click='rowClicked'
+          :colIdx='path.length'
           :type='node.type'
           :name='node.name' 
           :key='node.name'>
@@ -43,8 +36,8 @@
 <script>
 import Row from './Row.vue';
 import Pizzly from 'pizzly-js';
-import GitTree from '../data_structures/GitTree.ts'
-const { Octokit } = require('@octokit/rest');
+import GitTree from '../data_structures/GitTree.ts';
+import { Octokit } from '@octokit/rest';
 
 export default {
   name: 'MillerColumns',
@@ -54,6 +47,7 @@ export default {
         auth: process.env.VUE_APP_ACCESS_TOKEN,
       }),
       user: '',
+      token: '',
       ownerName: 'scott0129',
       repoName: 'git-miller',
       columns: [],
@@ -61,20 +55,24 @@ export default {
       lastCol: [],
       path: [],
       repositories: [],
-      gitTree: {},
+      gitTree: new GitTree(this.ownerName, this.repoName),
     }
   },
   methods: {
+    rowClicked: function(name, index) {
+      console.log(`clicked!! ${name} at ${index}`)
+    },
     /**
      * Given a list representing a path as such ['src', 'images', 'projects'], return
      * the tree at that node.
      */
-    getNodesAt: function(dirNames) {
-      let currentDir = this.wholeTree;
-      for (let dirName of dirNames) {
-        currentDir = currentDir.find(node => node.name == dirName);
-      }
-      return currentDir;
+    getNodesAt: async function(dirNames) {
+      return await this.gitTree.get(dirNames);
+      // let currentDir = this.wholeTree;
+      // for (let dirName of dirNames) {
+      //   currentDir = currentDir.find(node => node.name == dirName);
+      // }
+      // return currentDir;
     },
     /**
      * Given a column index, returns a function that should be called with the path.
@@ -113,16 +111,19 @@ export default {
     },
 
     fetchRepo: function() {
-      this.path = [];
-      this.columns = [];
-      this.lastCol = [];
-      this.fetchPath(this.ownerName, this.repoName, '', 5)
-        .then( (fetchedTree) => { 
-          this.wholeTree = fetchedTree;
-          this.wholeTree.type = 'dir';
-        });
+      this.gitTree = new GitTree(this.ownerName, this.repoName, this.user);
+      this.gitTree.init();
+      // -----------
+      // this.path = [];
+      // this.columns = [];
+      // this.lastCol = [];
+      // this.fetchPath(this.ownerName, this.repoName, '', 5)
+      //   .then( (fetchedTree) => { 
+      //     this.wholeTree = fetchedTree;
+      //     this.wholeTree.type = 'dir';
+      //   });
     },
-    
+
     fetchPath: function(owner, repo, path, depth) {
       if (!depth || depth <= 0) {
         return Promise.resolve([]);
@@ -160,8 +161,6 @@ export default {
     connectSuccess: function(data) {
       // On success, we update the user object
       this.user = data.authId;
-      this.token = data.token
-      this.gitTree = new GitTree(this.ownerName, this.repoName, this.token);
       console.log('Successfully logged in!')
     },
     connectError: function (err) {
