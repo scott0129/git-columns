@@ -5,7 +5,7 @@
       Welcome! This is git, but with columns.
     </h2>
     <div class='d-flex m-8'>
-      <MillerColumns class='m-3' style='width: 50%' v-on:codeUpdate='codeUpdate'/>
+      <MillerColumns class='m-3' style='width: 50%' v-on:display-code='codeUpdate'/>
       <div class='Box m-3 position-relative' style='width: 50%; max-height: 80vh; overflow: scroll' >
         <div class='Box-header py-2 d-flex flex-column flex-shrink-0 flex-md-row flex-md-items-center'></div>
         <div class='Box-body blob js-code-block-container p-0' style='text-align: left'>

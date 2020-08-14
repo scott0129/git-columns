@@ -76,9 +76,10 @@ class GitTree {
     currentNode = this.root;
     for (const name of path) {
       currentNode = currentNode.files!.find((node) => node.name == name)
-      if (!currentNode || !currentNode.files || !currentNode.isLoaded) {
+      if (!currentNode) {
         return Gnode.empty();
       }
+      currentNode.touch();
     }
     return currentNode;
   }

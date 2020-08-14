@@ -59,8 +59,30 @@ export default {
     }
   },
   methods: {
-    rowClicked: function(name, index) {
-      console.log(`clicked!! ${name} at ${index}`)
+    rowClicked: function(name, colIdx) {
+      this.path[colIdx] = name;
+      this.path.splice(colIdx + 1);
+
+      // Set all columns' contents with the corresponding directory in the WholeTree 
+      for (let i = 0; i < this.path.length; i++) {
+        // TODO: There might be a big where this loops too far. It shouldn't always check the last node if its a file
+        const prefixPath = this.path.slice(0, i);
+        const column = this.gitTree.lazyGet(prefixPath).files;
+        this.columns[i] = column;
+      }
+      this.columns = this.columns.splice(0, this.path.length);
+
+      let selectedNode = this.gitTree.lazyGet(this.path);
+      console.log(this.path);
+      console.log(selectedNode);
+
+      if (selectedNode.type == 'dir') {
+        this.lastCol = selectedNode.files;
+      } else {
+        fetch(selectedNode.downloadUrl)
+          .then(response => response.text())
+          .then(data => this.$emit('display-code', data));
+      }
     },
     /**
      * Given a list representing a path as such ['src', 'images', 'projects'], return
