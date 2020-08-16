@@ -9,7 +9,7 @@
       <div class='Box m-3 position-relative' style='width: 50%; max-height: 80vh; overflow: scroll' >
         <div class='Box-header py-2 d-flex flex-column flex-shrink-0 flex-md-row flex-md-items-center'></div>
         <div class='Box-body blob js-code-block-container p-0' style='text-align: left'>
-          <pre v-highlightjs="sourceCode"><code></code></pre>
+          <pre><code v-html="sourceCode"></code></pre>
         </div>
       </div>
     </div>
@@ -18,6 +18,7 @@
 
 <script>
 import MillerColumns from './MillerColumns'
+import hljs from 'highlight.js'
 
 export default {
   name: 'Home',
@@ -28,7 +29,7 @@ export default {
   },
   methods: {
     codeUpdate: function(sourceCode) {
-      this.sourceCode = sourceCode
+      this.sourceCode = hljs.highlightAuto(sourceCode).value
     }
   },
   components: {
