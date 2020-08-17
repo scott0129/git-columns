@@ -52,7 +52,6 @@ export default {
       ownerName: ownerName,
       repoName: repoName,
       columns: [],
-      lastColumn: GitTree.empty(),
       path: [],
       gitTree: new GitTree(this.ownerName, this.repoName),
     }
@@ -81,7 +80,6 @@ export default {
       this.columns = this.columns.splice(0, this.path.length);
 
       let selectedNode = this.gitTree.volatileGet(this.path);
-      this.lastColumn = selectedNode;
 
       selectedNode.touch()
         .catch((err) => {
@@ -102,14 +100,13 @@ export default {
     },
 
     fetchRepo: function() {
+      this.path = [];
+      this.columns = [];
+
       history.pushState({}, '', `/${this.ownerName}/${this.repoName}`);
 
       this.gitTree = new GitTree(this.ownerName, this.repoName, this.user);
       this.gitTree.init()
-        .then(() => {
-          let selectedNode = this.gitTree.root;
-          this.lastColumn = selectedNode;
-        })
         .catch((err) => {
           if (err.name == 'APILimitError') {
             this.$emit('api-limit');
