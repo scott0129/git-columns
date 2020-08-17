@@ -19,9 +19,9 @@
           :key='node.name'>
         </Row>
       </div>
-      <div v-if='this.getNodesAt(path).type == "dir"' id='last-col' class='miller-col' style='max-height: 80vh; overflow: scroll'>
+      <div v-if='this.getNodeAt(path).type == "dir"' id='last-col' class='miller-col' style='max-height: 80vh; overflow: scroll'>
         <Row 
-          v-for='node in this.getNodesAt(path).files' 
+          v-for='node in this.getNodeAt(path).files' 
           v-on:row-click='rowClicked'
           :colIdx='path.length'
           :type='node.type'
@@ -37,7 +37,6 @@
 import Row from './Row.vue';
 import Pizzly from 'pizzly-js';
 import GitTree from '../data_structures/GitTree.ts';
-import { Octokit } from '@octokit/rest';
 
 export default {
   name: 'MillerColumns',
@@ -47,18 +46,12 @@ export default {
     const repoName = splitUrl[2] || '';
     const user = this.$cookies.get('user') || '';
     return {
-      octokit: new Octokit({
-        auth: process.env.VUE_APP_ACCESS_TOKEN,
-      }),
       user: user,
       token: '',
       ownerName: ownerName,
       repoName: repoName,
       columns: [],
-      wholeTree: [],
-      lastCol: [],
       path: [],
-      repositories: [],
       gitTree: new GitTree(this.ownerName, this.repoName),
     }
   },
@@ -71,25 +64,24 @@ export default {
       for (let i = 0; i < this.path.length; i++) {
         // TODO: There might be a big where this loops too far. It shouldn't always check the last node if its a file
         const prefixPath = this.path.slice(0, i);
-        const column = this.getNodesAt(prefixPath).files;
+        const column = this.getNodeAt(prefixPath).files;
         this.columns[i] = column;
       }
       this.columns = this.columns.splice(0, this.path.length);
 
-      let selectedNode = this.getNodesAt(this.path);
+      let selectedNode = this.getNodeAt(this.path);
 
-      if (selectedNode.type == 'dir') {
-        this.lastCol = selectedNode.files;
-      } else {
+      if (selectedNode.type != 'dir') {
         selectedNode.getFile()
           .then(contents => this.$emit('display-code', contents));
       }
     },
+
     /**
      * Given a list representing a path as such ['src', 'images', 'projects'], return
      * the tree at that node.
      */
-    getNodesAt: function(dirNames) {
+    getNodeAt: function(dirNames) {
       try {
         return this.gitTree.lazyGet(dirNames)
       } catch (err) {
@@ -101,47 +93,8 @@ export default {
           throw err;
         }
       }
-      // let currentDir = this.wholeTree;
-      // for (let dirName of dirNames) {
-      //   currentDir = currentDir.find(node => node.name == dirName);
-      // }
-      // return currentDir;
     },
-    /**
-     * Given a column index, returns a function that should be called with the path.
-     * That way, a unique function is given to every row so that this component can know
-     * which was clicked.
-     */
-    cbForColumnAt: function(colIdx) {
-      function setPath(name) {
-        this.path[colIdx] = name;
-        this.path.splice(colIdx + 1);
 
-        // Set all columns' contents with the corresponding directory in the WholeTree 
-        for (let i = 0; i < this.path.length; i++) {
-          let column = this.getNodesAt(
-            this.path.slice(0, i)
-          );
-          this.columns[i] = column;
-        }
-        this.columns = this.columns.splice(0, this.path.length);
-
-        /**
-         * TODO: I named the funciton 'getNodesAt' plural because it returns a list
-         * but I think that really, it should be called 'getNode' cause it could also be a file
-         */
-        let selectedNode = this.getNodesAt(this.path);
-
-        if (selectedNode.type == 'dir') {
-          this.lastCol = this.getNodesAt(this.path);
-        } else {
-          fetch(selectedNode.download_url)
-            .then(response => response.text())
-            .then(data => this.$emit('codeUpdate', data));
-        }
-      }
-      return setPath.bind(this);
-    },
     fetchRepo: function() {
       history.pushState({}, '', `/${this.ownerName}/${this.repoName}`);
 
@@ -155,42 +108,8 @@ export default {
             throw err;
           }
         });
-      // -----------
-      // this.path = [];
-      // this.columns = [];
-      // this.lastCol = [];
-      // this.fetchPath(this.ownerName, this.repoName, '', 5)
-      //   .then( (fetchedTree) => { 
-      //     this.wholeTree = fetchedTree;
-      //     this.wholeTree.type = 'dir';
-      //   });
     },
 
-    fetchPath: function(owner, repo, path, depth) {
-      if (!depth || depth <= 0) {
-        return Promise.resolve([]);
-      }
-      return this.octokit.repos.getContent({
-        owner: owner,
-        repo: repo,
-        path: path,
-      }).then((res) => {
-        let tree = [];
-        for (let node of res.data) {
-          if (node.type == 'file') {
-            tree.push(node);
-          } else {
-            this.fetchPath(owner, repo, node.path, depth - 1)
-              .then((subtree) => {
-                subtree.name = node.name;
-                subtree.type = node.type;
-                tree.push(subtree);
-              });
-          }
-        }
-        return tree;
-      });
-    },
     connect: function() {
       // Here, we create a new method
       // that "connect" a user to GitHub
@@ -208,9 +127,10 @@ export default {
       
       console.log('Successfully logged in!')
     },
+
     connectError: function (err) {
       console.error(err)
-      alert('Something went wrong. Look at the logs.')
+      alert('Something went wrong! Couldn\'t log you in')
     }
   }, 
   updated: function () {
