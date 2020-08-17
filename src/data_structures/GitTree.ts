@@ -67,7 +67,7 @@ class GitTree {
     await this.root.touch();
   }
 
-  empty() {
+  static empty() {
     return Gnode.empty()
   }
 

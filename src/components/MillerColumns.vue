@@ -19,9 +19,9 @@
           :key='node.name'>
         </Row>
       </div>
-      <div v-if='this.getNodeAt(path).type == "dir"' id='last-col' class='miller-col' style='max-height: 80vh; overflow: scroll'>
+      <div v-if='lastColumn.type == "dir"' id='last-col' class='miller-col' style='max-height: 80vh; overflow: scroll'>
         <Row 
-          v-for='node in this.getNodeAt(path).files' 
+          v-for='node in lastColumn.files' 
           v-on:row-click='rowClicked'
           :colIdx='path.length'
           :type='node.type'
@@ -51,11 +51,21 @@ export default {
       ownerName: ownerName,
       repoName: repoName,
       columns: [],
+      lastColumn: GitTree.empty(),
       path: [],
       gitTree: new GitTree(this.ownerName, this.repoName),
     }
   },
   methods: {
+    scrollRight: function() {
+      const millerWindow = document.getElementById('file-browser');
+      millerWindow.scroll({
+        top: 0,
+        left: millerWindow.scrollWidth,
+        behavior: 'smooth'
+      })
+    },
+    
     rowClicked: function(name, colIdx) {
       this.path[colIdx] = name;
       this.path.splice(colIdx + 1);
@@ -70,20 +80,13 @@ export default {
       this.columns = this.columns.splice(0, this.path.length);
 
       let selectedNode = this.getNodeAt(this.path);
+      this.lastColumn = selectedNode;
 
       if (selectedNode.type != 'dir') {
         selectedNode.getFile()
           .then(contents => this.$emit('display-code', contents));
       }
 
-      let millerWindow = document.getElementById('file-browser')
-      if (millerWindow) {
-        millerWindow.scroll({
-            top: 0,
-            left: millerWindow.scrollWidth,
-            behavior: 'smooth'
-          })
-      }
     },
 
     /**
@@ -109,6 +112,10 @@ export default {
 
       this.gitTree = new GitTree(this.ownerName, this.repoName, this.user);
       this.gitTree.init()
+        .then(() => {
+          let selectedNode = this.getNodeAt(this.path);
+          this.lastColumn = selectedNode;
+        })
         .catch((err) => {
           if (err.name == 'APILimitError') {
             this.$emit('api-limit');
@@ -142,6 +149,9 @@ export default {
       alert('Something went wrong! Couldn\'t log you in')
     }
   }, 
+  updated: function() {
+    this.scrollRight();
+  },
   mounted: function() {
     this.$pizzly = new Pizzly({
       host: 'https://git-columns-auth.herokuapp.com',

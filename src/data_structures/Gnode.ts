@@ -47,7 +47,7 @@ class Gnode {
     this.contents = '';
 
     this.isLoaded = false;
-    this.files = undefined; // Files are undefined until load() is called
+    this.files = []; // Files are undefined until load() is called
 
     this.isRoot = isRoot || false;
 
@@ -62,6 +62,7 @@ class Gnode {
         path: 'PLACEHOLDER',
         type: 'dir',
         size: 0,
+        files: [],
         download_url: 'PLACEHOLDER',
       }
     )
