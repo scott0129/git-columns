@@ -81,9 +81,8 @@ export default {
       if (selectedNode.type == 'dir') {
         this.lastCol = selectedNode.files;
       } else {
-        fetch(selectedNode.downloadUrl)
-          .then(response => response.text())
-          .then(data => this.$emit('display-code', data));
+        selectedNode.getFile()
+          .then(contents => this.$emit('display-code', contents));
       }
     },
     /**

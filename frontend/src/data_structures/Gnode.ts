@@ -23,6 +23,8 @@ class Gnode {
   // File-only properties
   size: number // dir's have size zero
   downloadUrl: string | null;
+  isDownloaded: boolean;
+  contents: string;
 
   // Directory-only properties
   files: Array<Gnode> | undefined;
@@ -41,6 +43,8 @@ class Gnode {
 
     this.size = data.size;
     this.downloadUrl = data.download_url;
+    this.isDownloaded = false;
+    this.contents = '';
 
     this.isLoaded = false;
     this.files = undefined; // Files are undefined until load() is called
@@ -95,6 +99,23 @@ class Gnode {
       return this.files![0];
     } else {
       return this;
+    }
+  }
+
+  async getFile() { 
+    if (this.isDownloaded) {
+      return this.contents;
+    }
+    if (this.downloadUrl) {
+      return fetch(this.downloadUrl)
+        .then(response => response.text())
+        .then(contents => {
+          this.contents = contents;
+          this.isDownloaded = true;
+          return contents;
+        });
+    } else {
+      throw `This file doesn't have a downloadUrl! Are you trying to load a directory? Gnode type: ${this.type}` 
     }
   }
 
