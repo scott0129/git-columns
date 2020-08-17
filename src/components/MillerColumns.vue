@@ -19,9 +19,10 @@
           :key='node.name'>
         </Row>
       </div>
-      <div v-if='lastColumn.type == "dir"' id='last-col' class='miller-col' style='max-height: 80vh; overflow: scroll'>
+      {{/* TODO: Consider refactoring, cutting down volatileGet() to a single call. Not sure how to do it well though */}}
+      <div v-if='this.gitTree.volatileGet(path).type == "dir"' id='last-col' class='miller-col' style='max-height: 80vh; overflow: scroll'>
         <Row 
-          v-for='node in lastColumn.files' 
+          v-for='node in this.gitTree.volatileGet(path).files' 
           v-on:row-click='rowClicked'
           :colIdx='path.length'
           :type='node.type'
@@ -95,7 +96,7 @@ export default {
      */
     getNodeAt: function(dirNames) {
       try {
-        return this.gitTree.lazyGet(dirNames)
+        return this.gitTree.volatileGet(dirNames)
       } catch (err) {
         console.err(err);
         if (err.name == 'APILimitError') {

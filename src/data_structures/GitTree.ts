@@ -75,6 +75,28 @@ class GitTree {
     return this.root.depth();
   }
 
+  /**
+   * This gets the file at the given path
+   * It's volatile because although it doesn't guarantee the file is/isnt there,
+   * it's the fastest way to get any currently loaded structure so far.
+   * 
+   * This function alone never makes network requests
+   */
+  volatileGet(path: Array<string>) {
+    let currentNode: Gnode | undefined;
+    currentNode = this.root;
+    for (const name of path) {
+      if (!currentNode.files) {
+        return Gnode.empty();
+      }
+      currentNode = currentNode.files.find((node) => node.name == name)
+      if (!currentNode) {
+        return Gnode.empty();
+      }
+    }
+    return currentNode;
+  }
+
   lazyGet(path: Array<string>) {
     let currentNode: Gnode | undefined;
     currentNode = this.root;
