@@ -67,6 +67,10 @@ class GitTree {
     await this.root.touch();
   }
 
+  empty() {
+    return Gnode.empty()
+  }
+
   depth(): number {
     return this.root.depth();
   }

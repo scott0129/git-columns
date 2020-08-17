@@ -126,8 +126,10 @@ class Gnode {
     await this.load(3)
       .catch((err) => {
         if (err.status == 403 && err.headers['x-ratelimit-remaining'] == '0') {
-          //TODO Catch emit ratelimiting error and display something on Vue
-          console.error("Rate limiting hit!");
+          throw {
+            name: 'APILimitError',
+            message: 'API limit hit for the Github API!'
+          };
         } else {
           throw(err);
         }

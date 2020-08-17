@@ -19,9 +19,9 @@
           :key='node.name'>
         </Row>
       </div>
-      <div v-if='this.gitTree.lazyGet(path).type == "dir"' id='last-col' class='miller-col' style='max-height: 80vh; overflow: scroll'>
+      <div v-if='this.getNodesAt(path).type == "dir"' id='last-col' class='miller-col' style='max-height: 80vh; overflow: scroll'>
         <Row 
-          v-for='node in this.gitTree.lazyGet(path).files' 
+          v-for='node in this.getNodesAt(path).files' 
           v-on:row-click='rowClicked'
           :colIdx='path.length'
           :type='node.type'
@@ -42,14 +42,18 @@ import { Octokit } from '@octokit/rest';
 export default {
   name: 'MillerColumns',
   data: function() {
+    const splitUrl = window.location.pathname.split('/');
+    const ownerName = splitUrl[1] || '';
+    const repoName = splitUrl[2] || '';
+    const user = this.$cookies.get('user') || '';
     return {
       octokit: new Octokit({
         auth: process.env.VUE_APP_ACCESS_TOKEN,
       }),
-      user: '',
+      user: user,
       token: '',
-      ownerName: 'scott0129',
-      repoName: 'git-miller',
+      ownerName: ownerName,
+      repoName: repoName,
       columns: [],
       wholeTree: [],
       lastCol: [],
@@ -67,14 +71,12 @@ export default {
       for (let i = 0; i < this.path.length; i++) {
         // TODO: There might be a big where this loops too far. It shouldn't always check the last node if its a file
         const prefixPath = this.path.slice(0, i);
-        const column = this.gitTree.lazyGet(prefixPath).files;
+        const column = this.getNodesAt(prefixPath).files;
         this.columns[i] = column;
       }
       this.columns = this.columns.splice(0, this.path.length);
 
-      let selectedNode = this.gitTree.lazyGet(this.path);
-      console.log(this.path);
-      console.log(selectedNode);
+      let selectedNode = this.getNodesAt(this.path);
 
       if (selectedNode.type == 'dir') {
         this.lastCol = selectedNode.files;
@@ -88,8 +90,18 @@ export default {
      * Given a list representing a path as such ['src', 'images', 'projects'], return
      * the tree at that node.
      */
-    getNodesAt: async function(dirNames) {
-      return await this.gitTree.get(dirNames);
+    getNodesAt: function(dirNames) {
+      try {
+        return this.gitTree.lazyGet(dirNames)
+      } catch (err) {
+        console.err(err);
+        if (err.name == 'APILimitError') {
+          this.$emit('api-limit');
+          return GitTree.empty();
+        } else {
+          throw err;
+        }
+      }
       // let currentDir = this.wholeTree;
       // for (let dirName of dirNames) {
       //   currentDir = currentDir.find(node => node.name == dirName);
@@ -131,10 +143,19 @@ export default {
       }
       return setPath.bind(this);
     },
-
     fetchRepo: function() {
+      history.pushState({}, '', `/${this.ownerName}/${this.repoName}`);
+
       this.gitTree = new GitTree(this.ownerName, this.repoName, this.user);
-      this.gitTree.init();
+      this.gitTree.init()
+        .catch((err) => {
+          if (err.name == 'APILimitError') {
+            this.$emit('api-limit');
+            return GitTree.empty();
+          } else {
+            throw err;
+          }
+        });
       // -----------
       // this.path = [];
       // this.columns = [];
@@ -182,7 +203,10 @@ export default {
     },
     connectSuccess: function(data) {
       // On success, we update the user object
+      this.$emit('logged-in', data);
       this.user = data.authId;
+      this.$cookies.set('user',data.authId);
+      
       console.log('Successfully logged in!')
     },
     connectError: function (err) {
@@ -203,6 +227,9 @@ export default {
       host: 'https://git-columns-auth.herokuapp.com',
       publishableKey: 'ohNoYouSup3rH4x0rHowDidYouDoIt'
     });
+    if (this.repoName != '') {
+      this.fetchRepo();
+    }
   },
   components: {
     Row

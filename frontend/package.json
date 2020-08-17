@@ -17,7 +17,8 @@
     "core-js": "^3.6.5",
     "highlight.js": "^10.1.2",
     "pizzly-js": "^0.2.7",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-cookies": "^1.7.3"
   },
   "devDependencies": {
     "@types/jest": "^24.0.19",
