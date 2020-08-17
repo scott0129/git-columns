@@ -29,6 +29,7 @@ class Gnode {
   // Directory-only properties
   files: Array<Gnode> | undefined;
   isLoaded: boolean     // True iff files have been loaded
+  isLoading: boolean
 
   isRoot: boolean;
 
@@ -47,6 +48,7 @@ class Gnode {
     this.contents = '';
 
     this.isLoaded = false;
+    this.isLoading = false;
     this.files = []; // Files are undefined until load() is called
 
     this.isRoot = isRoot || false;
@@ -145,7 +147,7 @@ class Gnode {
    * file structure are loaded
    */
   async touch() {
-    await this.load(3)
+    await this.load(2)
       .catch((err) => {
         if (err.status == 403 && err.headers['x-ratelimit-remaining'] == '0') {
           throw {
@@ -176,12 +178,15 @@ class Gnode {
 
   /**
    * A recursive function to load all the data to some depth
+   * 
+   * TODO: There is a potential for race conditions with transitioning between isLoading and isLoaded.
+   *    consolidate those into a single state variable.
    */
   private async load(depth: number) {
     if (depth < 0 || this.type != 'dir') {
       return;
     }
-    if (this.isLoaded) {
+    if (this.isLoaded || this.isLoading) {
       for (const node of this.files!) {
         if (node.type == 'dir') {
           await node.load(depth - 1);
@@ -189,6 +194,7 @@ class Gnode {
       }
       return;
     }
+    this.isLoading = true;
 
     this.files = [];
 
@@ -198,22 +204,42 @@ class Gnode {
         this.path,
         this.authInfo.token)
 
+    const loadingChildren = [];
+
     // Create new Gnodes, while loading new ones.
     for (const nodeData of data) {
       const newNode = new Gnode(this.authInfo, this, nodeData)
+      this.sortedInsert(this.files, newNode);
       if (newNode.type == 'dir') {
-        await newNode.load(depth - 1)
+        loadingChildren.push(newNode.load(depth - 1));
       }
-      this.files!.push(newNode)
     }
 
+    await Promise.all(loadingChildren);
+
     // Sort the files into alphabetical order, but always put directories first
-    this.files!.sort(this.fileCompare);
+    this.files!.sort(this.nodeCompare);
 
     this.isLoaded = true;
+    this.isLoading = false;
   }
 
-  private fileCompare(a: Gnode, b	: Gnode) {
+  /** 
+   * Inserts an element into an already sorted array
+   */
+  private sortedInsert(array: Array<Gnode>, node: Gnode) {
+    for (let i = 0; i < array.length; ++i) {
+      if (this.nodeCompare(array[i], node) > 0) {
+        array.splice(i, 0, node);
+        return;
+      }
+    }
+    // If nothing in the list is greater than 'node'
+    array.push(node);
+    return;
+  }
+
+  private nodeCompare(a: Gnode, b	: Gnode) {
     if (a.type == b.type) {
         if (a.name < b.name) {
           return -1

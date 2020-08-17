@@ -75,13 +75,24 @@ export default {
       for (let i = 0; i < this.path.length; i++) {
         // TODO: There might be a big where this loops too far. It shouldn't always check the last node if its a file
         const prefixPath = this.path.slice(0, i);
-        const column = this.getNodeAt(prefixPath).files;
+        const column = this.gitTree.volatileGet(prefixPath).files;
         this.columns[i] = column;
       }
       this.columns = this.columns.splice(0, this.path.length);
 
-      let selectedNode = this.getNodeAt(this.path);
+      let selectedNode = this.gitTree.volatileGet(this.path);
       this.lastColumn = selectedNode;
+
+      selectedNode.touch()
+        .catch((err) => {
+          console.err(err);
+          if (err.name == 'APILimitError') {
+            this.$emit('api-limit');
+            return GitTree.empty();
+          } else {
+            throw err;
+          }
+        });
 
       if (selectedNode.type != 'dir') {
         selectedNode.getFile()
@@ -90,31 +101,13 @@ export default {
 
     },
 
-    /**
-     * Given a list representing a path as such ['src', 'images', 'projects'], return
-     * the tree at that node.
-     */
-    getNodeAt: function(dirNames) {
-      try {
-        return this.gitTree.volatileGet(dirNames)
-      } catch (err) {
-        console.err(err);
-        if (err.name == 'APILimitError') {
-          this.$emit('api-limit');
-          return GitTree.empty();
-        } else {
-          throw err;
-        }
-      }
-    },
-
     fetchRepo: function() {
       history.pushState({}, '', `/${this.ownerName}/${this.repoName}`);
 
       this.gitTree = new GitTree(this.ownerName, this.repoName, this.user);
       this.gitTree.init()
         .then(() => {
-          let selectedNode = this.getNodeAt(this.path);
+          let selectedNode = this.gitTree.root;
           this.lastColumn = selectedNode;
         })
         .catch((err) => {
