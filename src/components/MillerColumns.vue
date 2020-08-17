@@ -7,7 +7,7 @@
     <input v-model='repoName' placeholder='repo'>
     <button v-on:click='fetchRepo'>Get</button>
 
-    <div id='container' class='Box mx-auto d-flex flex-row' style='overflow: scroll; max-width: 100%'>
+    <div id='file-browser' class='Box mx-auto d-flex flex-row' style='overflow: scroll; max-width: 100%'>
       <div class='miller-col' v-for='(column, idx) in columns' :key='column.name' style='max-height: 80vh; overflow: scroll'>
         <Row 
           v-for='node in column' 
@@ -75,6 +75,15 @@ export default {
         selectedNode.getFile()
           .then(contents => this.$emit('display-code', contents));
       }
+
+      let millerWindow = document.getElementById('file-browser')
+      if (millerWindow) {
+        millerWindow.scroll({
+            top: 0,
+            left: millerWindow.scrollWidth,
+            behavior: 'smooth'
+          })
+      }
     },
 
     /**
@@ -133,14 +142,6 @@ export default {
       alert('Something went wrong! Couldn\'t log you in')
     }
   }, 
-  updated: function () {
-    this.$nextTick(function () {
-      let millerWindow = document.getElementById('last-col')
-      if (millerWindow) {
-        millerWindow.scrollIntoView({ behavior: 'smooth' });
-      }
-    })
-  },
   mounted: function() {
     this.$pizzly = new Pizzly({
       host: 'https://git-columns-auth.herokuapp.com',
