@@ -7,7 +7,6 @@
   "author": "Scott Kim <scott102938@gmail.com>",
   "license": "MIT",
   "private": true,
-  "workspaces": ["frontend", "backend"],
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
