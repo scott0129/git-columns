@@ -1,11 +1,13 @@
 <template>
   <div class='d-block'>
-      <div v-if='!user'>
-        <button @click.prevent='connect'>Connect to GitHub</button>
-      </div>
-    <input v-model='ownerName' placeholder='owner'>
-    <input v-model='repoName' placeholder='repo'>
-    <button v-on:click='fetchRepo'>Get</button>
+    <div v-if='!user'>
+      <button @click.prevent='connect'>Connect to GitHub</button>
+    </div>
+    <form>
+      <input v-model='ownerName' placeholder='owner'>
+      <input v-model='repoName' placeholder='repo'>
+      <button v-on:click='fetchRepo'>Get</button>
+    </form>
 
     <div id='file-browser' class='Box mx-auto d-flex flex-row' style='overflow: scroll; max-width: 100%'>
       <div class='miller-col' v-for='(column, idx) in columns' :key='column.name' style='max-height: 80vh; overflow: scroll'>
