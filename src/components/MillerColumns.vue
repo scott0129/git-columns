@@ -36,7 +36,7 @@
   </div>
 </template>
 
-<script>
+<script lang='javascript'>
 import Row from './Row.vue';
 import Pizzly from 'pizzly-js';
 import GitTree from '../data_structures/GitTree.ts';
@@ -55,7 +55,7 @@ export default {
       repoName: repoName,
       columns: [],
       path: [],
-      gitTree: new GitTree(this.ownerName, this.repoName),
+      gitTree: new GitTree(ownerName, repoName),
     }
   },
   methods: {
