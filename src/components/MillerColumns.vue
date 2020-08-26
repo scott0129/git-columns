@@ -1,16 +1,16 @@
 <template>
-  <div class='d-block'>
+  <div class='d-flex flex-column'>
     <div v-if='!user'>
       <button @click.prevent='connect'>Connect to GitHub</button>
     </div>
-    <form>
+    <form class='flex-1'>
       <input v-model='ownerName' placeholder='owner'>
       <input v-model='repoName' placeholder='repo'>
       <button v-on:click='fetchRepo'>Get</button>
     </form>
 
-    <div id='file-browser' class='Box mx-auto d-flex flex-row' style='overflow: scroll; max-width: 100%'>
-      <div class='miller-col' v-for='(column, idx) in columns' :key='column.name' style='max-height: 80vh; overflow: scroll'>
+    <div id='file-browser' class='Box d-flex flex-row m-0' >
+      <div class='miller-col' v-for='(column, idx) in columns' :key='column.name'>
         <Row 
           v-for='node in column' 
           v-on:row-click='rowClicked'
@@ -22,7 +22,7 @@
         </Row>
       </div>
       {{/* TODO: Consider refactoring, cutting down volatileGet() to a single call. Not sure how to do it well though */}}
-      <div v-if='this.gitTree.volatileGet(path).type == "dir"' id='last-col' class='miller-col' style='max-height: 80vh; overflow: scroll'>
+      <div v-if='this.gitTree.volatileGet(path).type == "dir"' class='miller-col'>
         <Row 
           v-for='node in this.gitTree.volatileGet(path).files' 
           v-on:row-click='rowClicked'
@@ -179,9 +179,16 @@ export default {
     border-left: 1px #e1e4e8 solid;
   }
 
-  .miller-col {
-    @extend .menu;
-    min-height: 40vh;
-    min-width: 33.3%;
+  #file-browser {
+    overflow: overlay;
+    // max-height: 80vh;
   }
+
+  .miller-col {
+    max-height: 100%;
+    width: 33.3%;
+    
+    overflow: scroll;
+  }
+
 </style>

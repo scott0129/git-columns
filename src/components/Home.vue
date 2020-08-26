@@ -7,7 +7,7 @@
     <div v-if='apiLimit' class='flash m-3 flash-error'>
       Hit the maximum allowed API calls! Please connect your GitHub account to bypass it.
     </div>
-    <div class='d-flex m-2'>
+    <div class='d-flex m-2' style='height: 80vh'>
       <MillerColumns 
         class='m-3' 
         style='width: 50%'
