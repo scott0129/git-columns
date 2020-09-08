@@ -214,7 +214,8 @@ export default {
 
   .miller-col {
     max-height: 100%;
-    width: 33.3%;
+    min-width: 33.3%;
+    max-width: 33.3%;
     
     overflow: scroll;
   }
