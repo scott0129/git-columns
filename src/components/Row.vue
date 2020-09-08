@@ -32,12 +32,9 @@ export default {
   },
   props: {
     name: String,
-    path: String,
     type: String,
     colIdx: Number,
     isActive: Boolean,
-    data: Object,
-    setPathCallback: Function,
   }
 }
 </script>

@@ -3,35 +3,57 @@
     <div v-if='!user'>
       <button @click.prevent='connect'>Connect to GitHub</button>
     </div>
-    <form class='flex-1'>
-      <input v-model='ownerName' placeholder='owner'>
-      <input v-model='repoName' placeholder='repo'>
-      <button v-on:click='fetchRepo'>Get</button>
-    </form>
 
-    <div id='file-browser' class='Box d-flex flex-row m-0' >
-      <div class='miller-col' v-for='(column, idx) in columns' :key='column.name'>
-        <Row 
-          v-for='node in column' 
-          v-on:row-click='rowClicked'
-          :isActive='path[idx] == node.name' 
-          :colIdx='idx'
-          :type='node.type'
-          :name='node.name' 
-          :key='node.name'>
-        </Row>
-      </div>
-      {{/* TODO: Consider refactoring, cutting down volatileGet() to a single call. Not sure how to do it well though */}}
-      <div v-if='this.gitTree.volatileGet(path).type == "dir"' class='miller-col'>
-        <Row 
-          v-for='node in this.gitTree.volatileGet(path).files' 
-          v-on:row-click='rowClicked'
-          :colIdx='path.length'
-          :type='node.type'
-          :name='node.name' 
-          :key='node.name'>
-        </Row>
-      </div	>
+    <div class='d-flex mb-3 px-3 px-md-4 px-lg-5'>
+      <form class='flex-auto min-width-0 width-fit mr-3'>
+        <h1 class='d-flex flex-wrap flex-items-center break-word f4 text-normal'>
+          <div 
+            v-html='octicons["repo"].toSVG({class: "octicon octicon-x"})'>
+          </div>
+          <input v-model='ownerName' placeholder='owner'>
+          <span class='mx-1'>/</span>
+          <input v-model='repoName' placeholder='repo'>
+          <button v-on:click='fetchRepo'>Fetch</button>
+        </h1>
+      </form>
+    </div>
+
+    <div class='d-flex flex-row m-2 flex-1' style='min-height: 0'>
+      <span id='file-browser' class='Box flex-1 m-2 d-flex flex-row' >
+        {{/* All the columns in the path leading up to leaf element */}}
+        <div class='miller-col Box' v-for='(column, idx) in columns' :key='column.name'>
+          <Row 
+            v-for='node in column' 
+            v-on:row-click='rowClicked'
+            :isActive='path[idx] == node.name' 
+            :colIdx='idx'
+            :type='node.type'
+            :name='node.name' 
+            :key='node.name'>
+          </Row>
+        </div>
+        {{/* Last column */}}
+        <div v-if='this.gitTree.volatileGet(path).type == "dir"' class='miller-col Box'>
+          {{/* TODO: Consider refactoring, cutting down volatileGet() to a single call. Not sure how to do it well though */}}
+          <Row 
+            v-for='node in this.gitTree.volatileGet(path).files' 
+            v-on:row-click='rowClicked'
+            :isActive='false' 
+            :colIdx='path.length'
+            :type='node.type'
+            :name='node.name' 
+            :key='node.name'>
+          </Row>
+        </div	>
+      </span>
+      <span class='Box flex-1 m-2 position-relative d-flex flex-column' style='min-width: 0'>
+        <div class='Box-header py-2'>
+          <b v-html='filePath'></b>
+        </div>
+        <div class='Box-body blob-wrapper p-0 gist-border' style='text-align: left; overflow: scroll'>
+          <pre><code v-html='sourceCode'></code></pre>
+        </div>
+      </span>
     </div>
   </div>
 </template>
@@ -40,6 +62,8 @@
 import Row from './Row.vue';
 import Pizzly from 'pizzly-js';
 import GitTree from '../data_structures/GitTree.ts';
+import hljs from 'highlight.js'
+import octicons from '@primer/octicons';
 
 export default {
   name: 'MillerColumns',
@@ -56,6 +80,9 @@ export default {
       columns: [],
       path: [],
       gitTree: new GitTree(ownerName, repoName),
+      sourceCode: '',
+      filePath: '',
+      octicons: octicons,
     }
   },
   methods: {
@@ -95,8 +122,9 @@ export default {
         });
 
       if (selectedNode.type != 'dir') {
+        this.filePath = selectedNode.path;
         selectedNode.getFile()
-          .then(contents => this.$emit('display-code', contents));
+          .then(contents => this.sourceCode = hljs.highlightAuto(contents).value);
       }
 
     },
@@ -192,3 +220,195 @@ export default {
   }
 
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
